@@ -10,7 +10,7 @@ class Town extends Phaser.Scene {
     preload() {
 
         this.load.path = './assets/'
-        this.load.spritesheet('ROY', 'ROYsprite.png', {
+        this.load.spritesheet('ROY', 'spritesheet.png', {
             frameWidth: 32,
             frameHeight: 32
         })
