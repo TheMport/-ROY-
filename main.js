@@ -8,8 +8,7 @@
 
 // define and configure main Phaser game object
 let config = {
-    parent: 'myGame',
-    type: Phaser.AUTO,
+    type: Phaser.WEBGL,
     height: 400,
     width: 400,
     scale: {
