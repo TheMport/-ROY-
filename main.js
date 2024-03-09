@@ -9,8 +9,8 @@
 // define and configure main Phaser game object
 let config = {
     type: Phaser.WEBGL,
-    height: 400,
-    width: 400,
+    height: 480,
+    width: 480,
     scale: {
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
@@ -25,7 +25,7 @@ let config = {
         }
     },
     zoom: 2,
-    scene: [Load,mainMenu,IntroScene,beginStory]
+    scene: [Load,mainMenu,IntroScene,beginStory,Choice1_1,Choice1_2]
 }
 
 
