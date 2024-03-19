@@ -43,13 +43,14 @@ class beginStory extends Phaser.Scene {
         this.choicesMade = false 
         }
 
-//text bubble broken FIX LATER
 
 preload(){
 
     //debug tools
+    /*
     console.log(this.sys.game.renderer.gl.getParameter(this.sys.game.renderer.gl.MAX_TEXTURE_SIZE))
 
+    /*
     this.load.on('filecomplete', function (key, type, data) {
         console.log(`Asset loaded: ${key}`)
         if (type === 'image') {
@@ -59,6 +60,7 @@ preload(){
             }
         }
     }, this)
+    
 
     this.load.on('filecomplete', function (key, type, data) {
         console.log(`Asset loaded: ${key}`)
@@ -66,9 +68,10 @@ preload(){
     
     this.load.on('loaderror', function (file) {
         console.error(`Error loading asset: ${file.key}`)
-    })
+    })*/
 
     //load assets
+    //comeback to load assets
 
     this.load.path = './assets/'
     this.load.spritesheet('ROY', '32ROY.png',{
@@ -92,28 +95,30 @@ preload(){
 }
 
 create() {
-    //Creates blinking affect at the beginning of the scene
-    this.cameras.main.fadeIn(1000,0,0,0)
-    this.cameras.main.fadeOut(1000,0,0,0)
     this.cameras.main.fadeIn(1000,0,0,0)
 
-    //create text box
-    const textBoxY = this.cameras.main.centerY 
-    this.drawTextBox(this.cameras.main.centerX, textBoxY, 280, 100)
+
+    const gameHeight = 480 
+    const textBoxWidth = 280
+    const textBoxHeight = 100
+    const textBoxX = this.cameras.main.centerX 
+    const textBoxY = gameHeight - textBoxHeight / 2 - 20 // above the bottom edge
     
-    // Add narrative text on top of the text box graphics.
+    this.drawTextBox(textBoxX, textBoxY, textBoxWidth, textBoxHeight)
+
     this.storyTextBox = this.add.text(this.cameras.main.centerX, textBoxY, this.narrativeTexts[this.textIndex], {
         font: '16px Pokemon GB',
         fill: '#000000',
-        align: 'center', // Ensure text alignment is centered
-        wordWrap: { width: 260 } // Slightly less than the text box width to ensure padding
-    }).setOrigin(0.5)
+        align: 'center',
+        wordWrap: { width: 260 }
+    }).setOrigin(0.5).setDepth(100)
 
-    // Setting a high depth value to ensure it renders on top of the tilemap and other objects.
-    this.storyTextBox.setDepth(10); this.input.on('pointerdown', () => {
+    // Advance on click
+    this.input.on('pointerdown', () => {
         if(!this.choicesMade){
-        this.updateText()
-    }})
+            this.updateText()
+        }
+    })
 
     //tilemap objects
     const map = this.add.tilemap('beginStoryRoomJSON')
@@ -152,7 +157,7 @@ create() {
         start: 0,
         end: 3
     })
-    this.ROY.play('walkAnimation')
+    //this.ROY.play('walkAnimation')
 
     //this.camera.main.setBounds(0,0, map.widthInPixels, map.heightInPixels)
     //this.camera.main.startFollow(this.ROY,true,0.25,0.25)
@@ -169,29 +174,32 @@ initiateParentsMovement() {
     // Move MOM to a new location after narrative choices
     this.tweens.add({
         targets: this.MOM,
-        x: 380, // Updated target x coordinate for MOM
-        y: 384, // Updated target y coordinate for MOM
+        x: 380, 
+        y: 384, 
         ease: 'Power1',
-        duration: 5000, // Duration for MOM to reach the target
-        // Removing the initial delay since it's now controlled by delayParentsMovement
+        duration: 5000, 
     })
 
     // Move DAD to a new location after narrative choices
     this.tweens.add({
         targets: this.DAD,
-        x: 416, // Updated target x coordinate for DAD
-        y: 350, // Updated target y coordinate for DAD
+        x: 416, 
+        y: 350, 
         ease: 'Power1',
-        duration: 5000, // Duration for DAD to reach the target
-        // Removing the initial delay since it's now controlled by delayParentsMovement
+        duration: 5000, 
     })
 }
 
 drawTextBox(x, y, width, height) {
-    this.textBox = this.add.graphics()
-    this.textBox.clear()
+    if (this.textBox) {
+        this.textBox.clear()
+    } else {
+        this.textBox = this.add.graphics()
+    }
+    
     this.textBox.fillStyle(0xFFFFFF, 1)
     this.textBox.fillRoundedRect(x - width / 2, y - height / 2, width, height, 5)
+    this.textBox.setDepth(5)
 }
 
 updateText() {
@@ -200,13 +208,12 @@ updateText() {
         this.storyTextBox.setText(this.narrativeTexts[this.textIndex])
         this.textIndex++
     } else if (!this.choicesMade) {
-        // Once the initial narrative texts are done, display choices
+        // Once the initial narrative texts are done give choices
         this.displayChoices()
     }
 }
 
 handleChoice(choice) {
-    // Correct handling of choices
     switch(choice) {
         case 'startCrying':
             this.processChoice(this.narrativeChoice.startCrying, 'Choice1_1')
@@ -216,17 +223,14 @@ handleChoice(choice) {
             break
     }
 
-    // Keep the delayParentsMovement logic as is
     this.delayParentsMovement()
 }
 
 
 delayParentsMovement() {
-    // This assumes the narrative choice text length determines the delay before they start moving.
-    const delayTime = this.narrativeTexts.length // Assuming each narrative text appears for 1 second.
+    const delayTime = this.narrativeTexts.length 
 
     this.time.delayedCall(delayTime, () => {
-        // Initiating MOM & DAD movement after the delay.
         this.initiateParentsMovement()
     })
 }
@@ -235,31 +239,26 @@ processChoice(narrativeTexts, nextScene) {
     // Set the narrative texts to the chosen array
     this.narrativeTexts = narrativeTexts
 
-    // Function to display the next narrative text or transition to the next scene
     const displayNextOrTransition = () => {
         if (this.textIndex < this.narrativeTexts.length) {
-            // Display the next narrative text
             this.storyTextBox.setText(this.narrativeTexts[this.textIndex]).setVisible(true)
+            // Show the textBox graphics again when displaying narrative texts after choice
+            this.textBox.setVisible(true) 
             this.textIndex++
         } else {
-            // If no more texts to display, transition to the next scene
             this.sceneTransition(nextScene)
         }
     }
 
-    // Reset for displaying choice texts
     this.textIndex = 0
     this.storyTextBox.setVisible(false)
 
-    // Display the first text or transition if there's none
     displayNextOrTransition()
 
-    // Adjust the input event listener to display next text or transition
     this.input.on('pointerdown', () => {
         displayNextOrTransition()
     })
 
-    // Indicate that choices have been processed
     this.choicesMade = true
 }
 
@@ -267,6 +266,7 @@ processChoice(narrativeTexts, nextScene) {
 displayChoices() {
     // Hide the current narrative text
     this.storyTextBox.setVisible(false)
+    this.textBox.setVisible(false)
     
     // Choice 1: startCrying
     const choice1 = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY - 20, 'Start Crying', {
@@ -285,16 +285,16 @@ displayChoices() {
     // Enable interactivity and add click events for each choice
     choice1.on('pointerdown', () => {
         this.handleChoice('startCrying')
-        choice1.setVisible(false) // Hide choice1 once selected
-        choice2.setVisible(false) // Hide choice2 once selected
+        choice1.setVisible(false) 
+        choice2.setVisible(false) 
     })
     choice2.on('pointerdown', () => {
         this.handleChoice('throwBabyFood')
-        choice1.setVisible(false) // Hide choice1 once selected
-        choice2.setVisible(false) // Hide choice2 once selected
+        choice1.setVisible(false) 
+        choice2.setVisible(false) 
     })
 
-    this.choicesMade = true // Indicate that choices are now displayed
+    this.choicesMade = true 
 
 }
 

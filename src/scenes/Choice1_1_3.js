@@ -1,35 +1,33 @@
-class Choice1_1 extends Phaser.Scene {
+class Choice1_1_3 extends Phaser.Scene {
     constructor() {
-        super('Choice1_1')
+        super('Choice1_1_3')
         this.textIndex = 0
         this.narrativeTexts = [
-            '*LALALALALAA*',
-            '*Roy is playing in the school courtyard*',
-            '[You are now in control of Roy]',
-            '[Use the arrow keys to move Roy]',
-            'Roy: "What a nice day to be playing outside"',
-            'Roy: " Now that I am in the second grade I need to figure out my life"',
-            'Roy: "Hmmm, I wonder what I should aspire for?"'
+            '*It is now the year 2066*',
+            '*Roy has been on the run for 50 years since he was 16*',
+            '*Ever since he hacked into the government mainframe his life has never been the same*',
+            'Roy: "On the run for 50 years, I wonder if I should have been a football player instead"',
+            'Roy: "Or even a trouble maker"',
+            'Roy: "Whatever its too late now but now I have to make a choice"',
+            'Roy: "I dont think I can keep running for much longer"',
+            'Roy: "I need to make a choice"'
         ]
 
         this.narrativeChoice = {
-            footballStar: [
-                //goes to Choice1_1_1
+            keepRunning: [
                 '',
-                'Roy: I wanna be a football player!',
-                'Roy: "I\'m going to start training now!"'
+                '*Roy sits in silence for a brief moment*',
+                'Roy: F it, I\'m going to keep running'
+                
             ],
-            troubleMaker: [
-                //goes to Choice1and2troubleMakerEnding
+            turnYourselfIn: [
                 '',
-                'Roy: I wanna be a trouble maker!',
-                'Roy: "I don\'t know what opioids are but I want to try them!"'
-            ],
-            messWithComputers: [
-                //goes to Choice1_1_3
-                '',
-                'Roy: I wanna mess with computers!',
-                'Roy: "I want to be a hacker!"'
+                '*Roy sits in silence for a brief moment*',
+                'Roy: "I should probably turn myself in..."',
+                'Roy: "I\'m tired of running"',
+                'Roy: "I want to go home"',
+                'Roy: "NOT!!!!"',
+                'Roy: "I will never turn myself in!"'
             ]
         }
     }
@@ -60,7 +58,7 @@ class Choice1_1 extends Phaser.Scene {
         })
         this.load.image('outdoorTile', 'anotherStuff.png')
         this.load.image('indoorTiles', 'indTiles.png')
-        this.load.tilemapTiledJSON('part1JSON', 'part1.json')
+        this.load.tilemapTiledJSON('messWithComputersJSON', 'messWithComputers.json')
     }
 
     create() {
@@ -83,7 +81,7 @@ class Choice1_1 extends Phaser.Scene {
         }})
 
         //tilemap objects
-        const map = this.add.tilemap('part1JSON')
+        const map = this.add.tilemap('messWithComputersJSON')
         const tileset = map.addTilesetImage('anotherStuff', 'outdoorTile')
         const tileset2 = map.addTilesetImage('insideStuff', 'indoorTiles')
 
@@ -94,6 +92,7 @@ class Choice1_1 extends Phaser.Scene {
         this.ROY = this.physics.add.sprite(roySpawn.x,roySpawn.y, 'ROY', 0)
 
         //create ROY
+        this.ROY = this.physics.add.sprite(0, 0, 'ROY', 0)
         console.log(this.ROY.x, this.ROY.y)
         this.ROY.body.setCollideWorldBounds(true)
     
@@ -171,15 +170,13 @@ class Choice1_1 extends Phaser.Scene {
 
     handleChoice(choice) {
         switch(choice) {
-            case 'footballStar':
-                this.processChoice(this.narrativeChoice.footballStar, 'Choice1_1_1')
+            case 'keepRunning':
+                this.processChoice(this.narrativeChoice.keepRunning, 'hackerAndEntreEnding')
                 break
-            case 'troubleMaker':
-                this.processChoice(this.narrativeChoice.troubleMaker, 'Choice1and2troubleMakerEnding')
+            case 'turnYourselfIn':
+                this.processChoice(this.narrativeChoice.turnYourselfIn, 'hackerAndEntreEnding')
                 break
-            case 'messWithComputers':
-                this.processChoice(this.narrativeChoice.messWithComputers, 'Choice1_1_3')
-                break
+
         }
     }
 
@@ -217,44 +214,31 @@ class Choice1_1 extends Phaser.Scene {
         // Hide the current narrative text
         this.storyTextBox.setVisible(false)
         
-        // Choice 1: Football Star
-        const choice1 = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY - 20, 'Football Star', {
+        // Choice 1: keep runnning
+        const choice1 = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY - 20, 'Keep Running', {
             font: '16px Pokemon GB',
             fill: '#000000',
             backgroundColor: '#FFFFFF'
         }).setInteractive().setOrigin(0.5)
     
-        // Choice 2: Trouble Maker
-        const choice2 = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY + 20, 'Join the Darkside', {
+        // Choice 2: Turn yourself in
+        const choice2 = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY + 20, 'Turn Yourself In', {
             font: '16px Pokemon GB',
             fill: '#000000',
             backgroundColor: '#FFFFFF'
         }).setInteractive().setOrigin(0.5)
 
-        const choice3 = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY + 60, 'Hacker man', {
-            font: '16px Pokemon GB',
-            fill: '#000000',
-            backgroundColor: '#FFFFFF'
-        }).setInteractive().setOrigin(0.5)
     
         // Enable interactivity and add click events for each choice
         choice1.on('pointerdown', () => {
-            this.handleChoice('footballStar')
+            this.handleChoice('keepRunning')
             choice1.setVisible(false) // Hide choice1 once selected
             choice2.setVisible(false) // Hide choice2 once selected
-            choice3.setVisible(false)
         })
         choice2.on('pointerdown', () => {
-            this.handleChoice('troubleMaker')
+            this.handleChoice('turnYourselfIn')
             choice1.setVisible(false) // Hide choice1 once selected
             choice2.setVisible(false) // Hide choice2 once selected
-            choice3.setVisible(false)
-        })
-        choice3.on('pointerdown', () => {
-            this.handleChoice('messWithComputers')
-            choice1.setVisible(false)
-            choice2.setVisible(false)
-            choice3.setVisible(false)
         })
     
         this.choicesMade = true // Indicate that choices are now displayed

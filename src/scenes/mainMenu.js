@@ -5,20 +5,20 @@ class mainMenu extends Phaser.Scene {
         super('mainMenu')
     }
 
+    preload() {
+        this.load.image('mainMenuCover', 'assets/mainMenuCover.png');
+    }
     create() { 
-
-        //Add the main menu backround title and instructions
-        // TODO: Add code to add main menu background title and instructions
-        this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, 'Main Menu', { font: '32px Pokemon GB', fill: '#fff' }).setOrigin(0.5);
-        this.add.text(this.cameras.main.centerX, this.cameras.main.centerY + 50, 'Press Space to Play', { font: '24px Pokemon GB', fill: '#fff' }).setOrigin(0.5);
+        this.cameras.main.fadeIn(2000, 0, 0, 0);
+        this.mainMenuCover = this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, 'mainMenuCover').setOrigin(0.5, 0.5)
 
     }
 
     update() {
         
-        if(this.input.keyboard.checkDown(this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE), 1000)){
+        this.input.on('pointerdown', function() {
             this.scene.start('IntroScene')
-        }
+        }, this)
 
 
     }
