@@ -74,21 +74,31 @@ class Choice1_1_1 extends Phaser.Scene {
 
     create() {
         //create text box
-        const textBoxY= this.cameras.main.centerY
-        this.drawTextBox(this.cameras.main.centerX, textBoxY,280,100)
+        this.cameras.main.fadeIn(1000, 0, 0, 0);
 
-        //add narrative text on top of text box
-        this.storyTextBox = this.add.text(this.cameras.main.centerX,textBoxY,this.narrativeTexts[this.textIndex], {
-            font:'16px Pokemon GB',
-            fill:'#000000',
-            align:'center',
-            wordWrap:{width:260}
-        }).setOrigin(0.5).setDepth(100)
+        const gameHeight = 480 
+        const textBoxWidth = 280
+        const textBoxHeight = 100
+        const textBoxX = this.cameras.main.centerX 
+        const textBoxY = gameHeight - textBoxHeight / 2 - 20 // above the bottom edge
         
-        this.storyTextBox.setDepth(10); this.input.on('pointerdown', () => {
-            if(!this.gotBall){
-            this.updateText()
-        }})
+        // Consistent text box creation as in Choice1_1
+        this.drawTextBox(this.cameras.main.centerX, this.cameras.main.centerY - 100, 280, 100);
+
+        // Adding narrative text on top of the text box, making sure settings are consistent
+        this.storyTextBox = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY - 100, this.narrativeTexts[this.textIndex], {
+            font: '16px Pokemon GB',
+            fill: '#000000',
+            align: 'center',
+            wordWrap: { width: 260 }
+        }).setOrigin(0.5);
+
+        this.storyTextBox.setDepth(10); 
+
+        // Modified to ensure consistency in handling user interactions
+        this.input.on('pointerdown', () => {
+            this.updateText();
+        })
 
         //tilemap objects
         const map = this.add.tilemap('footballFieldJSON')
@@ -235,12 +245,14 @@ class Choice1_1_1 extends Phaser.Scene {
         }
     
     }
-
     drawTextBox(x, y, width, height) {
-        this.textBox = this.add.graphics()
-        this.textBox.clear()
-        this.textBox.fillStyle(0xFFFFFF, 1)
-        this.textBox.fillRoundedRect(x - width / 2, y - height / 2, width, height, 5)
+        if (!this.textBox) {
+            this.textBox = this.add.graphics();
+        }
+        this.textBox.clear();
+        this.textBox.fillStyle(0xFFFFFF, 1);
+        this.textBox.fillRoundedRect(x - width / 2, y - height / 2, width, height, 5);
+        this.textBox.setVisible(true)
     }
 
     updateText() {
@@ -295,7 +307,7 @@ class Choice1_1_1 extends Phaser.Scene {
                             if (this.gotBall) {
                                 this.sceneTransition('footballStar')
                             } else {
-                                this.sceneTransition('footballFailure')
+                                this.sceneTransition('endRestart')
                             }
                         }, [], this)
                     }

@@ -25,7 +25,7 @@ let config = {
         }
     },
     zoom: 2,
-    scene: [Load,mainMenu,IntroScene,beginStory,Choice1_1,Choice1_1_1,footballFailure,footballStar,Choice1_2,Choice1and2troubleMakerEnding,Choice1_1_3,hackerAndEntreEnding,adulthood1,carpetStore,doctorOffice,LorD,beatCancer,carpetStore2,gameOver]
+    scene: [Load,mainMenu,IntroScene,beginStory,Choice1_1,Choice1_1_1,footballFailure,footballStar,Choice1_2,Choice1and2troubleMakerEnding,Choice1_1_3,hackerAndEntreEnding,adulthood1,carpetStore,doctorOffice,LorD,beatCancer,carpetStore2,endRestart,gameOver]
 }
 
 

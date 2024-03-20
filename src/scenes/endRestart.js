@@ -1,6 +1,6 @@
 class endRestart extends Phaser.Scene {
     constructor() {
-      super(endRestart)
+      super({ key: 'endRestart' })
       this.textIndex = 0
       this.narrativeTexts = [
         'Welcome to death',
@@ -46,10 +46,18 @@ class endRestart extends Phaser.Scene {
   
     transitionToNextScene() {
       this.cameras.main.fadeOut(2000, 0, 0, 0, (camera, progress) => {
-        if (progress === 1) {
-          this.scene.start('IntroScene') 
-        }
+          if (progress === 1) {
+              // Correct approach to stop all scenes and restart the game
+              this.scene.manager.scenes.forEach(scene => {
+                  if (scene.scene.key !== 'endRestart') {
+                      this.scene.stop(scene.scene.key);
+                  }
+              })
+
+              // Restart the game from the intro scene
+              this.scene.start('IntroScene')
+          }
       })
-    }
+  }
   }
   

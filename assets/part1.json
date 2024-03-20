@@ -30,12 +30,12 @@
         }, 
         {
          "draworder":"topdown",
-         "id":3,
+         "id":4,
          "name":"roySpawn",
          "objects":[
                 {
                  "height":0,
-                 "id":1,
+                 "id":2,
                  "name":"roySpawn",
                  "point":true,
                  "rotation":0,
@@ -43,7 +43,7 @@
                  "visible":true,
                  "width":0,
                  "x":224,
-                 "y":160
+                 "y":192
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -51,8 +51,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":4,
- "nextobjectid":2,
+ "nextlayerid":5,
+ "nextobjectid":3,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.2",

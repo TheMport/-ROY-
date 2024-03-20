@@ -1,34 +1,35 @@
 class hackerAndEntreEnding extends Phaser.Scene {
     constructor() {
-        super ('hackerAndEntreEnding')
-        this.textIndex = 0
-        this.allowControl = true
-        this.finishedNarrativeOutcome = false
+        super('hackerAndEntreEnding');
+        this.textIndex = 0;
+        this.allowControl = true;
+        this.finishedNarrativeOutcome = false;
+        // Adjusted narrative texts to mirror the structure and style from the troubleMaker ending
         this.narrativeTexts = [
             'Roy: "I think I finally escaped!"',
-            'Roy: "I can finally be free now that im Cuba!"',
+            'Roy: "I can finally be free now that I\'m in Cuba!"',
             '*Roy suddenly gets the chills*',
             '*He feels like he is being watched*',
             'Roy: "Is anyone there?"'
-        ]
-
+        ];
+        // Renamed narrativeOutcome to match the original's structure more closely
         this.narrativeOutcome = {
             HandEending: [
                 '*DUN DUN DUN*',
                 '*Batman APPEARS*',
                 'Roy: "OH NO IT CANT BE',
-                'Roy: "Batman ?!?!?!"',
+                'Roy: "Batman?!?!?!"',
                 'Batman: "Roy, I have finally found you"',
                 'Roy: "You know who I am?',
                 'Batman: "Yes, I know who you are"',
-                'Batman: "Youre a bad guy"',
-                'Batman: "Stealing other peoples money & what not"',
+                'Batman: "You\'re a bad guy"',
+                'Batman: "Stealing other people\'s money & what not"',
                 'Roy: "It was an accident I swear"',
                 '*Roy quickly tries to prepare himself to fight*',
                 '*Then suddenly',
                 '*Batman throws a batarang at Roy*'
             ]
-        }
+        };
     }
 
     preload() {
@@ -55,7 +56,7 @@ class hackerAndEntreEnding extends Phaser.Scene {
             frameWidth: 32,
             frameHeight: 32
         })
-        this.load.spritesheet('Batman', '32ROY.png', {
+        this.load.spritesheet('Batman', '32batman.png', {
             frameWidth: 32,
             frameHeight: 32
         
@@ -69,15 +70,19 @@ class hackerAndEntreEnding extends Phaser.Scene {
     create() {
 
         //create text box
-        const textBoxY = this.cameras.main.centerY
-        this.drawTextBox(this.cameras.main.centerX, textBoxY,280,100)
+        const gameHeight = this.cameras.main.height
+        const textBoxWidth = 280
+        const textBoxHeight = 100
+        const textBoxX = this.cameras.main.centerX
+        const textBoxY = gameHeight - textBoxHeight / 2 - 20
+        this.drawTextBox(textBoxX, textBoxY, textBoxWidth, textBoxHeight)
 
-        //add narrative text on top of the text box graphics
-        this.storyTextBox = this.add.text(this.cameras.main.centerX, textBoxY, this.narrativeTexts[this.textIndex], {
-            font:'16px Pokemon GB',
+        // Add narrative text on top of the text box graphics
+        this.storyTextBox = this.add.text(textBoxX, textBoxY, this.narrativeTexts[this.textIndex], {
+            font: '16px Pokemon GB',
             fill: '#000000',
             align: 'center',
-            wordWrap: {width:260}
+            wordWrap: { width: 260 }
         }).setOrigin(0.5).setDepth(100)
 
         //tilemap objects
@@ -87,11 +92,20 @@ class hackerAndEntreEnding extends Phaser.Scene {
 
         const houseBgLayer = map.createLayer('Background', tileset, 0, 0)
 
-        //create ROY
-        this.ROY = this.physics.add.sprite(0, 0, 'ROY', 0)
-        console.log(this.ROY.x, this.ROY.y)
-        this.ROY.body.setCollideWorldBounds(true)
     
+
+
+        //add Spawns
+        const roySpawn = map.findObject('roySpawn', obj => obj.name === 'roySpawn')
+        this.ROY = this.physics.add.sprite(roySpawn.x,roySpawn.y, 'ROY', 0)
+        this.ROY.body.setCollideWorldBounds(true)
+
+        // Initially, position Batman off-screen to the right
+        this.Batman = this.physics.add.sprite(this.cameras.main.width + 100, roySpawn ? roySpawn.y : 0, 'Batman').setVisible(false)
+       //this.Batman.setVisible(false)
+       this.Batman.body.setCollideWorldBounds(true)
+
+
         //ROY animation
         this.anims.create({
             key: 'walkAnimation',
@@ -101,10 +115,6 @@ class hackerAndEntreEnding extends Phaser.Scene {
         })
         this.ROY.play('walkAnimation')
 
-        //create Batman
-        this.Batman = this.physics.add.sprite(0,0, 'Batman', 0)
-        console.log(this.Batman.x, this.Batman.y)
-
         //Batman animation
         this.anims.create({
             key: 'BatmanEnter',
@@ -112,15 +122,6 @@ class hackerAndEntreEnding extends Phaser.Scene {
             frameRate: 10,
             repeat: -1
         })
-
-        //add Spawns
-        const roySpawn = map.findObject('roySpawn', obj => obj.name === 'roySpawn')
-        this.ROY = this.physics.add.sprite(roySpawn.x,roySpawn.y, 'ROY', 0)
-        this.Batman.body.setCollideWorldBounds(true)
-
-        // Initially, position Batman off-screen to the right
-        this.Batman = this.physics.add.sprite(this.cameras.main.width + 100, roySpawn ? roySpawn.y : 0, 'Batman').setVisible(false)
-       //this.Batman.setVisible(false)
 
         this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
     
@@ -175,10 +176,14 @@ class hackerAndEntreEnding extends Phaser.Scene {
     }
 
     drawTextBox(x, y, width, height) {
-        this.textBox = this.add.graphics()
-        this.textBox.clear()
+        if (this.textBox) {
+            this.textBox.clear()
+        } else {
+            this.textBox = this.add.graphics()
+        }
         this.textBox.fillStyle(0xFFFFFF, 1)
-        this.textBox.fillRoundedRect(x - width / 2, y, width, height, 5) 
+        this.textBox.fillRoundedRect(x - width / 2, y - height / 2, width, height, 5)
+        this.textBox.setDepth(5)
     }
 
     updateText() {
@@ -214,47 +219,44 @@ class hackerAndEntreEnding extends Phaser.Scene {
 
 
     updateNarrativeOutcome() {
-        this.narrativeTexts = this.narrativeOutcome.HandEending
+        if (this.finishedNarrativeOutcome) {
+            return; // Exit if the narrative outcome has already been processed
+        }
+        
         if (this.textIndex < this.narrativeOutcome.HandEending.length) {
-            this.storyTextBox.setText(this.narrativeOutcome.HandEending[this.textIndex])
-            this.textIndex++
-        }else {
-            this.finishedNarrativeOutcome = true
-            this.sceneTransition('endRestart')
+            this.storyTextBox.setText(this.narrativeOutcome.HandEending[this.textIndex]);
+            this.textIndex++;
+        } else {
+            // Ensuring the transition occurs after the last narrativeOutcome text is displayed
+            this.finishedNarrativeOutcome = true;
+            this.sceneTransition('endRestart');
         }
     }
 
     makeBatmanEnter() {
-        this.Batman.setVisible(true)
-        // Batman enters the scene and moves towards ROY
+        this.Batman.setVisible(true);
+        // Batman enters the scene moving towards ROY
         this.tweens.add({
             targets: this.Batman,
-            x: this.ROY.x - 50, // Adjusted for Batman to stop near ROY
+            x: this.ROY.x - 50, // Position Batman near ROY
             ease: 'Power1',
-            duration: 2000, // Adjust duration as needed
+            duration: 2000,
             onStart: () => {
-              this.Batman.play('BatmanEnter', true)  
+                this.Batman.play('BatmanEnter', true);
             },
             onComplete: () => {
-                this.textIndex = 0 // Reset textIndex to iterate through narrativeOutcome
-                this.updateNarrativeOutcome() // Start displaying 
-
-            if (this.textIndex < this.narrativeOutcome.HandEending.length) {
-            this.storyTextBox.setText(this.narrativeOutcome.HandEending[this.textIndex])
-            this.textIndex++
-            
-        }
+                // Do not reset textIndex here; directly proceed to update narrative outcome
+                this.updateNarrativeOutcome(); // Start displaying narrativeOutcome
             }
-        })
+        });
     }
 
-    sceneTransition(nextScene) {
-        this.cameras.main.fadeOut(3000, 0, 0, 0, (camera, progress) => {
-            if (progress === 1) {
-                this.scene.start(nextScene)
-            }
-        })
-    
+    sceneTransition(endRestart) {
+        console.log('Attempting to transition to scene:', endRestart); // Debugging
+        this.cameras.main.fadeOut(1000, 0, 0, 0);
+        this.cameras.main.once('camerafadeoutcomplete', () => {
+            this.scene.start(endRestart);
+        });
     }
 
 }

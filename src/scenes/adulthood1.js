@@ -212,7 +212,8 @@ update() {
     }
 
     sceneTransition() {
-        this.scene.start('carpetStore1') // Transition to the next scene
+        this.cameras.main.fadeIn(2000, 0, 0, 0)
+        this.scene.start('carpetStore') // Transition to the next scene
     }
 
 }

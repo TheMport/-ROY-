@@ -5,7 +5,6 @@ class Choice1_2 extends Phaser.Scene {
         this.narrativeTexts = [
             '*LALALALALAA*',
             '*Roy is playing in the school courtyard*',
-            '*He is contemplating what he caused within his parents divorce*',
             '[You are now in control of Roy]',
             '[Use the arrow keys to move Roy]',
             'Roy: "What a nice day to be playing outside"',
@@ -15,22 +14,25 @@ class Choice1_2 extends Phaser.Scene {
 
         this.narrativeChoice = {
             footballStar: [
+                //goes to Choice1_1_1
                 '',
                 'Roy: I wanna be a football player!',
                 'Roy: "I\'m going to start training now!"'
             ],
             troubleMaker: [
+                //goes to Choice1and2troubleMakerEnding
                 '',
                 'Roy: I wanna be a trouble maker!',
                 'Roy: "I don\'t know what opioids are but I want to try them!"'
             ],
-            entrepreneur: [
+            messWithComputers: [
+                //goes to Choice1_1_3
                 '',
-                'Roy: "I wanna make a business!"',
-                'Roy: "I want to be a entrepreneur!"',
-                'Roy: "I wonder what I should sell?"'
+                'Roy: I wanna mess with computers!',
+                'Roy: "I want to be a hacker!"'
             ]
         }
+        this.choicesMade = false
     }
 
     preload() {
@@ -64,22 +66,30 @@ class Choice1_2 extends Phaser.Scene {
 
     create() {
         //create text box
-        const textBoxY = this.cameras.main.centerY
+        this.cameras.main.fadeIn(1000,0,0,0)
+
+
+        const gameHeight = 480 
+        const textBoxWidth = 280
+        const textBoxHeight = 100
+        const textBoxX = this.cameras.main.centerX 
+        const textBoxY = gameHeight - textBoxHeight / 2 - 20 // above the bottom edge
+
         this.drawTextBox(this.cameras.main.centerX, textBoxY, 280, 100)
 
-        // Add narrative text on top of the text box graphics.
         this.storyTextBox = this.add.text(this.cameras.main.centerX, textBoxY, this.narrativeTexts[this.textIndex], {
             font: '16px Pokemon GB',
             fill: '#000000',
-            align: 'center', // Ensure text alignment is centered
-            wordWrap: { width: 260 } // Slightly less than the text box width to ensure padding
-        }).setOrigin(0.5)
+            align: 'center',
+            wordWrap: { width: 260 }
+        }).setOrigin(0.5).setDepth(10);
 
-        // Setting a high depth value to ensure it renders on top of the tilemap and other objects.
-        this.storyTextBox.setDepth(10); this.input.on('pointerdown', () => {
-            if(!this.choicesMade){
-            this.updateText()
-        }})
+        // Advance on click
+        this.input.on('pointerdown', () => {
+            if (!this.choicesMade) {
+                this.updateText();
+            }
+        });
 
         //tilemap objects
         const map = this.add.tilemap('part1JSON')
@@ -90,9 +100,9 @@ class Choice1_2 extends Phaser.Scene {
 
         //add Spawns
         const roySpawn = map.findObject('roySpawn', obj => obj.name === 'roySpawn')
+        this.ROY = this.physics.add.sprite(roySpawn.x,roySpawn.y, 'ROY', 0)
 
         //create ROY
-        this.ROY = this.physics.add.sprite(0, 0, 'ROY', 0)
         console.log(this.ROY.x, this.ROY.y)
         this.ROY.body.setCollideWorldBounds(true)
     
@@ -109,13 +119,11 @@ class Choice1_2 extends Phaser.Scene {
     
         //ROY's input
         this.cursors = this.input.keyboard.createCursorKeys()
+
+
         
-        // Position ROY at the spawn point
-        //broken fix later
-        //this.ROY.setPosition(roySpawn.x, roySpawn.y)
-   
     }
-    
+
     update() {
         // Movement speed of ROY
         const speed = 160
@@ -153,20 +161,24 @@ class Choice1_2 extends Phaser.Scene {
     }
 
     
-
     drawTextBox(x, y, width, height) {
-        this.textBox = this.add.graphics()
-        this.textBox.clear()
-        this.textBox.fillStyle(0xFFFFFF, 1)
-        this.textBox.fillRoundedRect(x - width / 2, y - height / 2, width, height, 5)
+        if (this.textBox) {
+            this.textBox.clear();
+        } else {
+            this.textBox = this.add.graphics()
+        }
+        this.textBox.fillStyle(0xFFFFFF, 1);
+        this.textBox.fillRoundedRect(x - width / 2, y - height / 2, width, height, 5);
+        this.textBox.setDepth(5);
     }
 
     updateText() {
+        // Updated to match beginStory's logic for handling narrative progression and choices
         if (this.textIndex < this.narrativeTexts.length) {
-            this.storyTextBox.setText(this.narrativeTexts[this.textIndex])
-            this.textIndex++
+            this.storyTextBox.setText(this.narrativeTexts[this.textIndex]);
+            this.textIndex++;
         } else if (!this.choicesMade) {
-            this.displayChoices()
+            this.displayChoices();
         }
     }
 
@@ -178,8 +190,8 @@ class Choice1_2 extends Phaser.Scene {
             case 'troubleMaker':
                 this.processChoice(this.narrativeChoice.troubleMaker, 'Choice1and2troubleMakerEnding')
                 break
-            case 'entrepreneur':
-                this.processChoice(this.narrativeChoice.entrepreneur, 'Choice1_2_3')
+            case 'messWithComputers':
+                this.processChoice(this.narrativeChoice.messWithComputers, 'Choice1_1_3')
                 break
         }
     }
@@ -190,6 +202,7 @@ class Choice1_2 extends Phaser.Scene {
         const displayNextOrTransition = () => {
             if (this.textIndex < this.narrativeText.length) {
                 this.storyTextBox.setText(this.narrativeText[this.textIndex]).setVisible(true)
+                this.textBox.setVisible(true)
                 this.textIndex++
             } else {
                 this.sceneTransition(nextScene)
@@ -217,6 +230,7 @@ class Choice1_2 extends Phaser.Scene {
     displayChoices() {
         // Hide the current narrative text
         this.storyTextBox.setVisible(false)
+        this.textBox.setVisible(false)
         
         // Choice 1: Football Star
         const choice1 = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY - 20, 'Football Star', {
@@ -252,7 +266,7 @@ class Choice1_2 extends Phaser.Scene {
             choice3.setVisible(false)
         })
         choice3.on('pointerdown', () => {
-            this.handleChoice('entrepreneur')
+            this.handleChoice('messWithComputers')
             choice1.setVisible(false)
             choice2.setVisible(false)
             choice3.setVisible(false)

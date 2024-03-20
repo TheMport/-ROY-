@@ -92,6 +92,7 @@ class carpetStore extends Phaser.Scene {
                         this.storyTextBox.setVisible(true) // Show story text
                         this.textBox.setVisible(true) // Make sure the text box graphics is visible
                     } else {
+                        this.cameras.main.fadeIn(2000, 0, 0, 0)
                         this.scene.start('doctorOffice') // Transition to the doctorOffice scene
                     }
                 }
