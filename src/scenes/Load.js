@@ -4,7 +4,7 @@ class Load extends Phaser.Scene {
     }
 
     preload() { 
-        this.load.video('aikeIntro', 'assets/Aikeintro.mp4', 'loadeddata', false, true)
+        this.load.video('aikeIntro', 'assets/AikeIntro.mp4', 'loadeddata', false, true)
     }
 
     create() { 
